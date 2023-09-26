@@ -1,0 +1,89 @@
+<html>
+<head>
+    <title>signup</title>
+
+    <link rel='stylesheet' href='style.css' />
+    <meta charset="UTF-8">
+</head>
+<body>
+
+    <!-- navigation bar -->
+    <base href="/">
+    <section class="resources">
+        <nav>
+                <a class="logo" href="index.html"><img src="/images/logo.png">
+            <div class="nav-links">
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="resources.html">RESOURCES</a></li>
+                    <li><a href="authentication.html">LOGIN</a></li>
+                </ul>
+            </div>
+        </nav>
+    </section>
+
+    <!-- content -->
+    <div class='text-box'>
+      <form id="user">
+        
+        <label for="uname">User name:</label>
+              <br />
+              <input type="text" id="uname" name="uname">
+          <br />
+          <br />
+          <input type="submit" value="Submit" class="signup-btn">
+          
+        <p id="username"></p>
+
+        
+      </form>
+    </div>
+  
+  <script>
+
+
+const username = document.getElementById("user")
+username.addEventListener("submit", userform)
+
+//async function to send input to API endpoint
+async function userform(event) {
+    event.preventDefault()
+    const endpoint = "app/createAccount/"
+    const url = document.baseURI+endpoint
+    console.log(url)
+    const formEvent = event.currentTarget
+
+    try {
+        const formData = new FormData(formEvent)
+        const userName = await sendUsername({url, formData})
+        document.getElementById("username").innerHTML = "Message: "+userName.message
+        console.log(userName.message)
+
+    } catch (error) {
+        console.log(error)
+    }
+
+    console.log(url)
+}
+
+async function sendUsername({url, formData}) {
+    const plainFormData = Object.fromEntries(formData.entries())
+    const formDataJson = JSON.stringify(plainFormData)
+    console.log(formDataJson)
+
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+        },
+        body: formDataJson
+    }
+
+    const response = await fetch(url, options);
+    return response.json()
+}
+    </script>
+
+</body>
+</html>

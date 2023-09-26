@@ -1,0 +1,88 @@
+<html>
+<head>
+    <title>delete</title>
+
+    <link rel='stylesheet' href='style.css' />
+    <meta charset="UTF-8">
+</head>
+<body>
+
+    <!-- navigation bar -->
+    <base href="/">
+    <section class="resources">
+        <nav>
+                <a class="logo" href="index.html"><img src="/images/logo.png">
+            <div class="nav-links">
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="resources.html">RESOURCES</a></li>
+                </ul>
+            </div>
+        </nav>
+    </section>
+
+    <!-- content -->
+    <div class='text-box'>
+      <form id="delete">
+        
+        <label for="uname">Delete your Account!</label>
+              <br />
+              <input type="text" id="uname" name="uname">
+          <br />
+          <br />
+          <input type="submit" value="Submit" class="signup-btn">
+          
+        <p id="user"></p>
+
+        
+      </form>
+    </div>
+  
+  <script>
+
+
+const username = document.getElementById("delete")
+username.addEventListener("submit", deleteform)
+
+//async function to send input to API endpoint
+async function deleteform(event) {
+    event.preventDefault()
+    const endpoint = "app/remove/"
+    const url = document.baseURI+endpoint
+    console.log(url)
+    const formEvent = event.currentTarget
+
+    try {
+        const formData = new FormData(formEvent)
+        const deleteUser = await deleteUsername({url, formData})
+        document.getElementById("user").innerHTML = "Message: "+deleteUser.message
+        console.log(deleteUser.message)
+
+    } catch (error) {
+        console.log(error)
+    }
+
+    console.log(url)
+}
+
+async function deleteUsername({url, formData}) {
+    const plainFormData = Object.fromEntries(formData.entries())
+    const formDataJson = JSON.stringify(plainFormData)
+    console.log(formDataJson)
+
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+        },
+        body: formDataJson
+    }
+
+    const response = await fetch(url, options);
+    return response.json()
+}
+    </script>
+
+</body>
+</html>

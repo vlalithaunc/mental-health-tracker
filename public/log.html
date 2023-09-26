@@ -1,0 +1,180 @@
+<html>
+
+<head>
+    <title>myHealth</title>
+    <link rel='stylesheet' href='style.css' />
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+    <!-- navigation bar -->
+    <base href="/">
+    <section class="mentalTracker">
+    <nav>
+    <a class="logo" href="index.html"><img src="/images/logo.png">
+    <div class="nav-links">
+        <ul>
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="analysis.html">RESULTS</a></li>
+            <li><a href="resources.html">RESOURCES</a></li>
+            <li><a href="log.html">MENTAL HEALTH LOG</a></li>
+        </ul>
+    </div>
+    </nav>
+    </section>
+
+    <!-- content -->
+    <div class='text-box'>
+        <form id="dailyLog">
+            <label for="uname">User name:</label>
+            <br />
+            <input type="text" id="uname" name="uname">
+            <br />
+            <br />
+            <label for="name">Name:</label>
+            <br />
+            <input type="text" id="name" name="name">
+            <br />
+            <br />
+            <label for="sleep">How many hours of sleep did you get last night?</label>
+            <br />
+            <input type="text" id="sleep" name="sleep">
+            <br />
+            <br />
+            <label for="sleepQuality">How was the quality of your sleep?</label>
+            <select id="sleepQuality" name="sleepQuality">
+                <option value=" "> </option>
+                <option value="great">slept like a log :)</option>
+                <option value="good">good</option>
+                <option value="moderate">okay</option>
+                <option value="bad">still sleepy</option>
+                <option value="poor">sleep deprived :(</option>
+            </select>
+            <br />
+            <br />
+            <label for="appetite">How has your appetite been lately?</label>
+            <select id="appetite" name="appetite">
+                <option value=" "> </option>
+                <option value="full">very full, stuffed!</option>
+                <option value="satisfied">satistified</option>
+                <option value="neutral">neutral, not overally hungry.</option>
+                <option value="hungry">pretty hungry.</option>
+                <option value="ravenous">starving, always hungry!</option>
+            </select>
+            <br />
+            <br />
+            <label for="mood">How are you feeling today??</label>
+            <select id="mood" name="mood">
+                <option value=" "> </option>
+                <option value="great">great!</option>
+                <option value="good">good</option>
+                <option value="okay">okay, not bad.</option>
+                <option value="bad">bad</option>
+                <option value="horrible">you do not want to know!</option>
+            </select>
+            <br />
+            <br />
+            <label for="reflect">Reflect: What is the reason for your mood/feeling?</label>
+            <br />
+            <input type="text" id="reflect" name="reflect">
+            <br />
+            <br />
+            <input type="submit" value="Submit" class="signup-btn">
+            <p id="first"></p>
+
+        </form>
+        
+        <p id="id"></p>
+        <p id="appetite"></p>
+        <p id="sleep"></p>
+        <p id="mood"></p>
+        <p id="reflect"></p>
+
+        
+    </div>
+    
+<script>
+const dailyLog = document.getElementById("dailyLog")
+dailyLog.addEventListener("submit", logForm)
+
+// Set up an asynchronous function so that it will await a response.
+async function logForm(event) {
+    event.preventDefault()
+    // Build up the endpoint URL
+    const endpoint = "app/log/"
+    const url = document.baseURI+endpoint
+    console.log(url)
+    const formEvent = event.currentTarget
+
+    try {
+        const formData = new FormData(formEvent)
+        console.log(formData)
+        const dailyLog_app = await sendForm({url, formData})
+        document.getElementById("dailyLog").innerHTML = "Here are your customized suggestions " + dailyLog_app.name
+
+        //sleep
+        if(dailyLog_app.sleep < 5){
+            document.getElementById("sleep").innerHTML = "According to medical experts, you need at least 6-8 hours of sleep. Be mindful of active screens and maintain a healthy diet for better sleep."
+        } 
+        else if(dailyLog_app.sleep === undefined){
+
+        }
+        else{
+            document.getElementById("sleep").innerHTML = "Glad you slept well, but make sure to maintain a regular sleep schedule."
+        }
+
+        //mood
+        if(dailyLog_app.mood === "bad" || dailyLog_app.mood === "horrible"){
+            document.getElementById("mood").innerHTML = "Awww, sorry to hear that! Try to reflect on your day and use some of the 'mental health resources' to meditate or calm your mind."
+        } 
+        else if(dailyLog_app.mood === undefined){
+
+        }
+        else{
+            document.getElementById("mood").innerHTML = "It's nice to hear you are doing well! Make sure to give yourself some self-care time."
+        }
+
+        //appetite
+        if(dailyLog_app.appetite === "hungry" || dailyLog_app.appetite === "ravenous"){
+            document.getElementById("appetite").innerHTML = "Healthy eating is not about strict limitations, staying unrealistically thin, or depriving yourself of the foods you love. It is about feeling great, having more energy, improving your health, and boosting your mood. Here is a tip to healthy eating: maintain a balance of protein, fat, carbohydrates, fiber, vitamins, and minerals in your diet."
+        }else if(dailyLog_app.appetite === undefined){
+
+        }else{
+            document.getElementById("appetite").innerHTML = "Great that you are taking care of your diet and eating well. Make sure you maintain a balance of protein, fat, carbohydrates, fiber, vitamins, and minerals in your diet."
+        } 
+
+        document.getElementById("reflect").innerHTML = "It might feel unnecessary, but reflecting on your day is a great way to learn more about yourself and make adjustments to grow. So continue to take the mental health check in each day and reflect on your day!"
+
+        console.log(dailyLog_app)
+        console.log(url)
+
+    } catch (error) {
+        console.log(error)
+    }
+
+    //var new_url = document.baseURI+"dailyLogResults.html"
+    //window.location = new_url
+}
+
+async function sendForm({url, formData}) {
+    const plainFormData = Object.fromEntries(formData.entries())
+    const formDataJson = JSON.stringify(plainFormData)
+    console.log(formDataJson)
+
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+        },
+        body: formDataJson
+    }
+
+    const response = await fetch(url, options);
+    return response.json()
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+
+<html>
+
+  <head>
+      <title>login</title>
+  
+      <link rel='stylesheet' href='style.css' />
+      <meta charset="UTF-8">
+  </head>
+  
+  <body>
+  
+      <!-- navigation bar -->
+      <base href="/">
+      <section class="resources">
+          <nav>
+                  <a class="logo" href="index.html"><img src="/images/logo.png">
+              <div class="nav-links">
+                  <ul>
+                      <li><a href="index.html">HOME</a></li>
+                      <li><a href="analysis.html">RESULTS</a></li>
+                      <li><a href="resources.html">RESOURCES</a></li>
+                      <li><a href="log.html">MENTAL HEALTH LOG</a></li>
+                      <li><a href="remove.html">DELETE ACCOUNT</a></li>
+                  </ul>
+              </div>
+          </nav>
+      </section>
+  
+      <!-- content -->
+      <div class='text-box'>
+        <form id="login">
+          <label for="uname">Login:</label>
+                <br />
+                <input type="text" id="uname" name="uname">
+            <br />
+            <br />
+            <input type="submit" value="Submit" class="signup-btn">
+        </form>
+        <p id="message"></p>        
+      </div>
+    
+    <script>
+    
+  const username = document.getElementById("login")
+  username.addEventListener("submit", userform)
+  
+  async function userform(event) {
+      event.preventDefault()
+      const endpoint = "app/authentication/"
+      const url = document.baseURI+endpoint
+      console.log(url)
+      const formEvent = event.currentTarget
+  
+      try {
+          const formData = new FormData(formEvent)
+          const loginCheck = await sendLogin({url, formData})
+          if(loginCheck.uname === undefined){
+            document.getElementById("message").innerHTML = "Invalid username, please try again!"
+          }
+          else{
+            document.getElementById("login").innerHTML = "Hello "+loginCheck.uname + ", Welcome Back! Go ahead and take your mental health check up!"
+          }
+          console.log(loginCheck.message)
+  
+      } catch (error) {
+          console.log(error)
+      }
+  
+      console.log(url)
+  }
+  
+  async function sendLogin({url, formData}) {
+      const plainFormData = Object.fromEntries(formData.entries())
+      const formDataJson = JSON.stringify(plainFormData)
+      console.log(formDataJson)
+  
+      const options = {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json"
+          },
+          body: formDataJson
+      }
+  
+      const response = await fetch(url, options);
+      return response.json()
+  }
+      </script>
+  
+  </body>
+  </html>

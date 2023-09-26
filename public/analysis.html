@@ -1,0 +1,99 @@
+<html>
+
+<head>
+    <title>myHealth</title>
+
+    <link rel='stylesheet' href='style.css' />
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+    <!-- navigation bar -->
+    <base href="/">
+    <section class="resources">
+        <nav>
+                <a class="logo" href="index.html"><img src="/images/logo.png">
+            <div class="nav-links">
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="analysis.html">RESULTS</a></li>
+                    <li><a href="resources.html">RESOURCES</a></li>
+                    <li><a href="log.html">MENTAL HEALTH LOG</a></li>
+                </ul>
+            </div>
+        </nav>
+    </section>
+
+    <!-- content -->
+    <div class='text-box'>
+        <h2>Welcome to you Mental Health Dashboard</h2>
+        <br>
+        <form id="results">
+            <label for="uname">User name:</label>
+            <br />
+            <input type="text" id="uname" name="uname">
+            <br />
+            <br />
+            <input type="submit" value="Submit" class="signup-btn">
+        </form>
+        <p id="id"></p>
+        <p id="sleep"></p>
+        <p id="sleepQuality"></p>
+        <p id="appetite"></p>
+        <p id="mood"></p>
+        <p id="reflect"></p>
+    </div>
+    <script>
+
+        const result = document.getElementById("results")
+        result.addEventListener("submit", getResults)
+
+        async function getResults(event) {
+            event.preventDefault();
+            const endpoint = "app/analysis/"
+            const url = document.baseURI+endpoint
+            const formEvent = event.currentTarget
+
+            try {
+                const formData = new FormData(formEvent)
+                const plainFormData = Object.fromEntries(formData.entries())
+                const formDataJson = JSON.stringify(plainFormData)
+                var json = JSON.parse(formDataJson)
+                const uname = json["uname"]
+                const updatedUrl = url+uname
+                const results = await sendResults(updatedUrl)
+                console.log(results)
+                if(uname === undefined){
+                    document.getElementById("id").innerHTML = "Invalid Username, try again!"
+                }
+                else{
+                    document.getElementById("results").innerHTML = "Here is a record of your mental health questionnaire " + results.uname + "!"
+                    document.getElementById("sleep").innerHTML = "Sleep: "+results.sleep + ", Sleep Quality: " + results.sleepQuality
+                    document.getElementById("appetite").innerHTML= "Appetite: "+results.appetite+", Mood: "+results.mood
+                    document.getElementById("reflect").innerHTML= "Reflection: "+results.reflect
+                }
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+
+        async function sendResults(url) {
+            console.log("send function")
+            const options = {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json"
+                },
+            }
+            const response = await fetch(url, options);
+            console.log(response)
+            return response.json()
+        }
+    </script>
+</body>
+
+</html>

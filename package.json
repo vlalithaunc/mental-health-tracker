@@ -1,0 +1,23 @@
+{
+    "name": "mental-health-tracker",
+    "version": "1.0.0",
+    "description": "daily mental health tracker",
+    "main": "server.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/vlalithaunc/mental-health-tracker.git"
+    },
+    "author": "Lalitha Vadrevu",
+    "license": "ISC",
+    "dependencies": {
+      "better-sqlite3": "^7.5.1",
+      "cors": "^2.8.5",
+      "express": "^4.18.1",
+      "fs": "^0.0.1-security",
+      "morgan": "^1.10.0",
+      "nodemon": "^2.0.15"
+    }
+  }
